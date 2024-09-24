@@ -1,7 +1,11 @@
-
+import Header from "../components/Header"
+import SpecialityMenu from "../components/SpecialityMenu"
 const Home = () => {
   return (
-    <p className="text-3xl font-bold underline">Homepage</p>
+    <div>
+        <Header />
+        <SpecialityMenu />
+    </div>
   )
 }
 
