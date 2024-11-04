@@ -1,13 +1,92 @@
-import { useState } from "react";
-
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { AppContext } from "../context/AppContext";
 const Login = () => {
   const [state, setState] = useState("Sign up");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [dob, setDob] = useState("");
+  const [gender, setGender] = useState("");
+
+  const {user, setUser} = useContext(AppContext);
+
+  const navigate = useNavigate();
+  const handleConfirmPasswordInput = (e) => {
+    setConfirmPassword(e.target.value);
+    if (password !== e.target.value) {
+      setError("Passwords do not match");
+    } else {
+      setError("");
+    }
+  };
 
   const onSubmitHandle = async (e) => {
     e.preventDefault();
+    if (state === "Sign up") {
+      if (password !== confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+      try {
+        const data = {
+          fullName: name,
+          email,
+          password,
+          confirmPassword,
+          image: "",
+          dob: new Date(dob).toISOString(),
+          gender,
+          address: "",
+        };
+        console.log(data);
+
+        const response = await axios.post(
+          "https://localhost:7235/api/User/SignUp",
+          data,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        const data =  {
+          email,
+          password,
+        }
+        const response = await axios.post(
+          "https://localhost:7235/api/User/SignIn",
+          data,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+                
+        console.log(data);
+        setUser(data)
+        if (response.status == 200) {
+          navigate("/"); 
+          setUser(data.email); // Lưu thông tin người dùng vào AppContext
+          setError("");
+        } else {
+          setError(response.data.message || "Failed to sign in");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
   };
   return (
     <form className="min-h-[80vh] flex items-center" onSubmit={onSubmitHandle}>
@@ -42,6 +121,7 @@ const Login = () => {
             required
           />
         </div>
+
         <div className="w-full">
           <p>Password:</p>
           <input
@@ -52,7 +132,59 @@ const Login = () => {
             required
           />
         </div>
-        <button className="bg-primary text-white w-full p-2 rounded-md text-base">
+        {state == "Sign up" && (
+          <div className="w-full">
+            <p>Confirm password:</p>
+            <input
+              className="border border-zinc-300 rounded w-full p-2 mt-1"
+              type="password"
+              onChange={(e) => handleConfirmPasswordInput(e)}
+              value={confirmPassword}
+              required
+            />
+            {error && <p className="text-red-500 mt-1">{error}</p>}
+          </div>
+        )}
+
+        {state == "Sign up" && (
+          <>
+            <div className="w-full">
+              <p>DOB:</p>
+              <input
+                className="border border-zinc-300 rounded w-full p-2 mt-1"
+                type="date"
+                onChange={(e) => setDob(e.target.value)}
+                value={dob}
+                required
+              />
+            </div>
+            <div className="w-full">
+              <p>Phone:</p>
+              <input
+                className="border border-zinc-300 rounded w-full p-2 mt-1"
+                type="number"
+                onChange={(e) => setPhone(e.target.value)}
+                value={phone}
+                required
+              />
+            </div>
+            <div className="w-full">
+              <p>Gender:</p>
+              <select
+                name=""
+                id=""
+                value={gender}
+                className="border border-zinc-300 rounded w-full p-2 mt-1"
+                onChange={(e) => setGender(e.target.value)}
+              >
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+          </>
+        )}
+
+        <button  type="submit" className="bg-primary text-white w-full p-2 rounded-md text-base">
           {state == "Sign up" ? "Create account" : "Login"}
         </button>
         {state == "Sign up" ? (
@@ -80,6 +212,7 @@ const Login = () => {
             </span>
           </p>
         )}
+        {error && <p className="text-red-500 mt-1">{error}</p>}
       </div>
     </form>
   );

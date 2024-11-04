@@ -1,12 +1,24 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "../index.css";
 import { assets } from "../assets/assets";
+import { AppContext } from "../context/AppContext";
+import { useEffect } from "react";
 const Navbar = () => {
   const navigate = useNavigate();
-
-  const [token, setToken] = useState(true);
-
+  const {user, setUser} = useContext(AppContext);
+  const [token, setToken] = useState(true)
+  console.log(token);
+  useEffect(() => {
+    if (user) {
+      setToken(true);
+    }
+  }, [user]);
+  const handleLogout = () => {
+    setUser(null); // Xóa thông tin người dùng khỏi AppContext
+    setToken(false); // Đặt token thành false
+    navigate("/login"); // Chuyển hướng đến trang đăng nhập
+  };
   return (
     <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400">
       <img
@@ -33,13 +45,9 @@ const Navbar = () => {
         </NavLink>
       </ul>
       <div className="flex items-center gap-4">
-        {token ? (
+        {user ? (
           <div className="flex items-center gap-2 group relative">
-            <img
-              src={assets.profile_pic}
-              className="w-6 rounded-full cursor-pointer"
-              alt=""
-            />
+            <p>{user}</p>
             <img
               src={assets.dropdown_icon}
               className="w-3 cursor-pointer"
@@ -49,7 +57,7 @@ const Navbar = () => {
               <div className="min-w-48 bg-stone-200 rounded flex flex-col gap-4 p-4">
                 <p onClick={() => navigate("/my-profile")} className="hover:text-black cursor-pointer">My Profile</p>
                 <p onClick={() => navigate("/my-appointment")} className="hover:text-black cursor-pointer">My Appointment</p>
-                <p onClick={() => setToken(false)} className="hover:text-black cursor-pointer">Logout</p>
+                <p onClick={handleLogout}  className="hover:text-black cursor-pointer">Logout</p>
               </div>
             </div>
           </div>
@@ -63,7 +71,7 @@ const Navbar = () => {
         )}
       </div>
     </div>
-  );
+  )
 };
 
 export default Navbar;

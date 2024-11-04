@@ -1,6 +1,11 @@
+import { useContext, useEffect } from "react";
 import { assets } from "../assets/assets";
+import { AppContext } from "../context/AppContext";
 const Header = () => {
+  const {user} = useContext(AppContext);
+  
   return (
+    
     <div className="flex flex-col md:flex-row flex-wrap bg-primary rounded-lg px-6 md:px-10 lg:px-20">
       {/* left side */}
       <div className="md:w-1/2 flex flex-col items-start justify-center gap-4 py-10 m-auto md:py[-10vw] md:mb[-30px]">
@@ -19,7 +24,7 @@ const Header = () => {
       {/* <-- Added closing div tag here */}
       {/* right side */}
       <div className="md:w-1/2 relative">
-        <img className="w-full md:absolute bottom-0 h-auto rounded-lg "  src={assets.header_img} alt="" />
+        <img className="w-full md:absolute bottom-0 h-auto rounded-lg max-h-full object-contain "  src={assets.header_img} alt="" />
       </div>
     </div>
   );
