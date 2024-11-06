@@ -12,6 +12,8 @@ const Navbar = () => {
   useEffect(() => {
     if (user) {
       setToken(true);
+      console.log(user);
+      
     }
   }, [user]);
   const handleLogout = () => {
@@ -47,7 +49,10 @@ const Navbar = () => {
       <div className="flex items-center gap-4">
         {user ? (
           <div className="flex items-center gap-2 group relative">
+           <div>
             <p>{user}</p>
+           </div>
+            
             <img
               src={assets.dropdown_icon}
               className="w-3 cursor-pointer"

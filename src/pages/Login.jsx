@@ -12,8 +12,7 @@ const Login = () => {
   const [phone, setPhone] = useState("");
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState("");
-
-  const {user, setUser} = useContext(AppContext);
+  const { user, setUser } = useContext(AppContext);
 
   const navigate = useNavigate();
   const handleConfirmPasswordInput = (e) => {
@@ -33,7 +32,7 @@ const Login = () => {
         return;
       }
       try {
-        const data = {
+        const userData = {
           fullName: name,
           email,
           password,
@@ -43,42 +42,49 @@ const Login = () => {
           gender,
           address: "",
         };
-        console.log(data);
-
+        const requestData = {
+          model: userData,
+        };
+        
+        console.log(requestData);
+        
         const response = await axios.post(
           "https://localhost:7235/api/User/SignUp",
-          data,
+          requestData,
           {
             headers: {
               "Content-Type": "application/json",
             },
           }
         );
-        console.log(response.data);
+        console.log(response.status);
+        
+        console.log(requestData);
+
       } catch (err) {
         console.log(err);
       }
     } else {
       try {
-        const data =  {
+        const userData = {
           email,
           password,
-        }
+        };
+        
         const response = await axios.post(
           "https://localhost:7235/api/User/SignIn",
-          data,
+          userData,
           {
             headers: {
               "Content-Type": "application/json",
             },
           }
         );
-                
-        console.log(data);
-        setUser(data)
+
+        console.log(userData);
         if (response.status == 200) {
-          navigate("/"); 
-          setUser(data.email); // Lưu thông tin người dùng vào AppContext
+          navigate("/");
+          setUser(userData.email); // Lưu thông tin người dùng vào AppContext
           setError("");
         } else {
           setError(response.data.message || "Failed to sign in");
@@ -184,7 +190,10 @@ const Login = () => {
           </>
         )}
 
-        <button  type="submit" className="bg-primary text-white w-full p-2 rounded-md text-base">
+        <button
+          type="submit"
+          className="bg-primary text-white w-full p-2 rounded-md text-base"
+        >
           {state == "Sign up" ? "Create account" : "Login"}
         </button>
         {state == "Sign up" ? (
