@@ -1,30 +1,49 @@
 import { assets } from "../assets/assets";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AdminContext } from "../context/AdminContext";
 const Login = () => {
   const [state, setState] = useState("Admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
-    /* const onSubmitHandler = async(e) => {
-        e.preventDefault()
-        try{
-            if(state == 'Admin'){
-                const data = await axios.post(backendUrl + 'api/admin/login', {email,password})
-                if(data.success){
-                    localStorage.setItem('aToken', data.token)
-                    setAToken(data.token)   
-                }
-            } else{
-                toast.error('Doctor login not yet implemented')
-            }
-        } catch (e){
-
+  const { aToken, setAToken } = useContext(AdminContext);
+const navigate = useNavigate();
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const data = {
+        email,
+        password,
+      };
+      const response = await axios.post(
+        "https://localhost:7235/api/User/SignIn",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-    } */
+      );
+
+      console.log(response);
+
+      if (response.status == 200) {
+        toast.success("Sign in successfully");
+        navigate("/admin-dashboard");
+        setAToken(response.data);
+      } else {
+        toast.error("Fail to sign in");
+      }
+    } catch (err) {
+      toast.error("Fail to sign in");
+    }
+  };
 
   return (
-    <form  className="min-h-[80vh] flex items-center">
+    <form onSubmit={onSubmitHandler} className="min-h-[80vh] flex items-center">
       <div className="flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-[#5E5e5e] text-sm shadow-lg">
         <p className="text-2xl font-semibold m-auto">
           <span className="text-primary">{state}</span> Login
@@ -32,7 +51,7 @@ const Login = () => {
         <div className="w-full">
           <p>Email</p>
           <input
-            onClick={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             value={email}
             className="border border-[#dadada] rounded w-full p-2 mt-1"
             type="email"
@@ -42,8 +61,8 @@ const Login = () => {
         <div className="w-full">
           <p>Password</p>
           <input
-          onClick={(e) => setPassword(e.target.value)}
-          value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
             className="border border-[#dadada] rounded w-full p-2 mt-1"
             type="password"
             required
@@ -54,16 +73,27 @@ const Login = () => {
         </button>
         {state == "Admin" ? (
           <p>
-            Doctor Login? <span className="underline text-primary cursor-pointer"  onClick={() => setState('Doctor')}>Click here</span>
+            Doctor Login?{" "}
+            <span
+              className="underline text-primary cursor-pointer"
+              onClick={() => setState("Doctor")}
+            >
+              Click here
+            </span>
           </p>
         ) : (
           <p>
-            Admin Login? <span className="underline text-primary cursor-pointer" onClick={() => setState('Admin')}>Click here</span>
+            Admin Login?{" "}
+            <span
+              className="underline text-primary cursor-pointer"
+              onClick={() => setState("Admin")}
+            >
+              Click here
+            </span>
           </p>
         )}
       </div>
     </form>
   );
 };
-
 export default Login;
