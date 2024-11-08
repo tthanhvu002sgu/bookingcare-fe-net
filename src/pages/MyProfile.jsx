@@ -1,36 +1,63 @@
 import { useEffect, useState } from "react";
 import { assets } from "../assets/assets";
-
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
 const MyProfile = () => {
-  const [userData, setUserData] = useState({
-    name: "Hello World",
-    email: "helloworld@gmail.com",
-    phone: "0000 000 000",
-    address: {
-      line1: "57th Cross, Richmand",
-      line2: "Circle, Ring Road, London",
-    },
-    gender: "Male",
-    dob: "2000-01-09",
-  });
+  const { user, getUserByEmail, userData } = useContext(AppContext);
   const [isEdit, setIsEdit] = useState(false);
+  const [userUpdateData, setUserUpdateData] = useState({});
+
+  function formatDate(dateString) {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("en-US", options);
+  }
+
   useEffect(() => {
-    console.log(isEdit);
-  }, [isEdit]);
+    getUserByEmail(user);
+    setUserUpdateData(userData);
+  }, [user, isEdit]);
+  const handleSaveChange = async () => {
+    setIsEdit(false);
+    console.log(userUpdateData);
+    try {
+      const data = {
+        FullName: userUpdateData.name == '' ? userData.fullName : userUpdateData.name,
+        Image: "userUpdateData.image",
+        Dob: new Date(userUpdateData.dob).toISOString() == 'Invalid Date' ? userData.dob : new Date(userUpdateData.dob).toISOString(),
+        Gender: userUpdateData.gender == '' ? userData.gender : userUpdateData.gender,
+        Address: userUpdateData.address == '' ? userData.address : userUpdateData.address,
+        PhoneNumber: userUpdateData.phone == '' ? userData.phoneNumber : userUpdateData.phone,
+      };
+      const response = await axios.put(
+        `https://localhost:7235/api/Patients/update?email=${user}`, 
+        data, // Truyền patient object trong body
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      getUserByEmail(user)
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className="max-w-lg flex flex-col gap-2 text-sm ">
       {isEdit ? (
         <input
           className="bg-gray-50 text-3xl font-medium max-w-60 mt-4"
           type="text"
-          value={userData.name}
+          value={userUpdateData.name}
           onChange={(e) =>
-            setUserData((prev) => ({ ...prev, name: e.target.value }))
+            setUserUpdateData((prev) => ({ ...prev, name: e.target.value }))
           }
         />
       ) : (
         <p className="font-medium text-3xl text-neutral-900 mt-4">
-          {userData.name}
+          {userData.fullName}
         </p>
       )}
       <hr className="bg-zinc-400 h-[1px] border-none" />
@@ -44,48 +71,36 @@ const MyProfile = () => {
           {isEdit ? (
             <input
               className="bg-gray-100 max-w-52"
-              type="text"
-              value={userData.phone}
+              type="number"
+              value={userUpdateData.phone}
               onChange={(e) =>
-                setUserData((prev) => ({ ...prev, phone: e.target.value }))
+                setUserUpdateData((prev) => ({
+                  ...prev,
+                  phone: e.target.value,
+                }))
               }
             />
           ) : (
-            <p className="text-blue-400">{userData.phone}</p>
+            <p className="text-blue-400">{userData.phoneNumber}</p>
           )}
           <p className="font-medium">Address: </p>
           {isEdit ? (
             <p>
               <input
+                type="text"
                 className="bg-gray-50"
-                value={userData.address.line1}
+                value={userUpdateData.address}
                 onChange={(e) =>
-                  setUserData((prev) => ({
+                  setUserUpdateData((prev) => ({
                     ...prev,
-                    address: { ...prev.address, line1: e.target.value },
+                    address: e.target.value,
                   }))
                 }
-                type="text"
               />
               <br />
-              <input
-                className="bg-gray-50"
-                type="text"
-                value={userData.address.line2}
-                onChange={(e) =>
-                  setUserData((prev) => ({
-                    ...prev,
-                    address: { ...prev.address, line2: e.target.value },
-                  }))
-                }
-              />
             </p>
           ) : (
-            <p className="text-gray-500">
-              {userData.address.line1}
-              <br />
-              {userData.address.line2}
-            </p>
+            <p className="text-gray-500">{userData.address}</p>
           )}
         </div>
       </div>
@@ -93,42 +108,44 @@ const MyProfile = () => {
         <p className="text-neutral-500 underline mt-3">BASIC INFORMATION</p>
         <div className="grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-neutral-700">
           <p className="font-medium">Gender:</p>
-          <div>
-            {isEdit ? (
-              <select
-                className="bg-gray-100 max-w-20"
-                onChange={(e) =>
-                  setUserData((prev) => ({ ...prev, gender: e.target.value }))
-                }
-                value={userData.gender}
-              >
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-            ) : (
-              <p className="text-gray-400">{userData.gender}</p>
-            )}
-            <p className="font-medium">Date of Birth:</p>
-            {isEdit ? (
-              <input
-                className="max-w-28 bg-gray-100"
-                onChange={(e) =>
-                  setUserData((prev) => ({ ...prev, dob: e.target.value }))
-                }
-                value={userData.dob}
-                type="date"
-              />
-            ) : (
-              <p className="text-gray-400">{userData.dob}</p>
-            )}
-          </div>
+
+          {isEdit ? (
+            <select
+              className="bg-gray-100 max-w-20"
+              onChange={(e) =>
+                setUserUpdateData((prev) => ({
+                  ...prev,
+                  gender: e.target.value,
+                }))
+              }
+              value={userUpdateData.gender}
+            >
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          ) : (
+            <p className="text-gray-400 capitalize ">{userData.gender}</p>
+          )}
+          <p className="font-medium">Date of Birth:</p>
+          {isEdit ? (
+            <input
+              className="max-w-28 bg-gray-100"
+              onChange={(e) =>
+                setUserUpdateData((prev) => ({ ...prev, dob: e.target.value }))
+              }
+              value={userUpdateData.dob}
+              type="date"
+            />
+          ) : (
+            <p className="text-gray-400">{formatDate(userData.dob)}</p>
+          )}
         </div>
       </div>
       <div className="mt-6 ">
         {isEdit ? (
           <button
             className="border border-primary px-8 py-2 rounded-full hover:text-white hover:bg-primary transition-all"
-            onClick={() => setIsEdit(false)}
+            onClick={() => handleSaveChange()}
           >
             Save Information
           </button>

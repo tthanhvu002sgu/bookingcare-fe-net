@@ -4,11 +4,13 @@ import "../index.css";
 import { assets } from "../assets/assets";
 import { AppContext } from "../context/AppContext";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 const Navbar = () => {
   const navigate = useNavigate();
   const {user, setUser} = useContext(AppContext);
   const [token, setToken] = useState(true)
-  console.log(token);
+  console.log( JSON.stringify(user) === '{}');
+  
   useEffect(() => {
     if (user) {
       setToken(true);
@@ -47,7 +49,7 @@ const Navbar = () => {
         </NavLink>
       </ul>
       <div className="flex items-center gap-4">
-        {user ? (
+        {user && typeof user === 'string'? (
           <div className="flex items-center gap-2 group relative">
            <div>
             <p>{user}</p>

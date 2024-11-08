@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
 const Login = () => {
   const [state, setState] = useState("Sign up");
   const [email, setEmail] = useState("");
@@ -41,13 +42,12 @@ const Login = () => {
           dob: new Date(dob).toISOString(),
           gender,
           address: "",
+          phoneNumber: phone,
         };
         const requestData = {
           model: userData,
         };
-        
-        console.log(requestData);
-        
+
         const response = await axios.post(
           "https://localhost:7235/api/User/SignUp",
           requestData,
@@ -57,12 +57,13 @@ const Login = () => {
             },
           }
         );
-        console.log(response.status);
-        
-        console.log(requestData);
 
+        console.log(response);
+        toast.success("Account created successfully");
+        setState("Login");
       } catch (err) {
-        console.log(err);
+        toast.error(err.response.data.errors[0])
+        console.log(err.response.data.errors[0]);
       }
     } else {
       try {
@@ -70,7 +71,7 @@ const Login = () => {
           email,
           password,
         };
-        
+
         const response = await axios.post(
           "https://localhost:7235/api/User/SignIn",
           userData,
@@ -80,16 +81,23 @@ const Login = () => {
             },
           }
         );
+        console.log(response);
+        
 
-        console.log(userData);
         if (response.status == 200) {
+          toast.success("Login successfully");
           navigate("/");
           setUser(userData.email); // Lưu thông tin người dùng vào AppContext
           setError("");
         } else {
+          toast.error("Email or password is incorrect");
+          console.log(response);
+
           setError(response.data.message || "Failed to sign in");
         }
       } catch (err) {
+        toast.error("Email or password is incorrect");
+
         console.log(err);
       }
     }
