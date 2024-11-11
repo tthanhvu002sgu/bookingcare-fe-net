@@ -3,87 +3,44 @@ import { useParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 const Doctors = () => {
   const { speciality } = useParams();
-  const { doctors } = useContext(AppContext);
+  const { doctors,specializations, getAllSpecializations } = useContext(AppContext);
   const navigate = useNavigate();
   const [filterDoc, setFilterDoc] = useState([]);
-  
-
-  const applyFilter = () => {
+  const { getAllDoctors } = useContext(AppContext);
+ /*  const applyFilter = () => {
     if (speciality) {
       setFilterDoc(doctors.filter((doctor) => doctor.speciality == speciality));
     } else {
       setFilterDoc(doctors);
     }
-  };
+  }; */
   useEffect(() => {
-    applyFilter();
-  }, [doctors, speciality]);
+    //applyFilter();
+    getAllSpecializations()
+    getAllDoctors()
+  }, [doctors, specializations]);
 
   return (
     <div>
       <p className="text-gray-600 ">Browse through the doctors specialist.</p>
       <div className="flex flex-col items-start sm:flex-row gap-5 mt-5">
         <div className="flex flex-col gap-3 text-sm text-gray-600">
-          <p
-            onClick={() =>
-              speciality === "General physician"
-                ? navigate("/doctors/")
-                : navigate("/doctors/General physician")
-            }
-            className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}
-          >
-            General physician
-          </p>
-          <p
-            onClick={() =>
-              speciality === ""
-                ? navigate("/doctors/")
-                : navigate("/doctors/Gynecologist")
-            }
-            className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}
-          >
-            Gynecologist
-          </p>
-          <p
-            onClick={() =>
-              speciality === "Dermatologist"
-                ? navigate("/doctors/")
-                : navigate("/doctors/Dermatologist")
-            }
-            className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}
-          >
-            Dermatologist
-          </p>
-          <p
-            onClick={() =>
-              speciality === "Pedialtricians"
-                ? navigate("/doctors/")
-                : navigate("/doctors/Pedialtricians")
-            }
-            className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}
-          >
-            Pedialtricians
-          </p>
-          <p
-            onClick={() =>
-              speciality === "Neurologist"
-                ? navigate("/doctors/")
-                : navigate("/doctors/Neurologist")
-            }
-            className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}
-          >
-            Neurologist
-          </p>
-          <p
-            onClick={() =>
-              speciality === "Gastroenterologist"
-                ? navigate("/doctors/")
-                : navigate("/doctors/Gastroenterologist")
-            }
-            className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}
-          >
-            Gastroenterologist
-          </p>
+          {specializations.map((item, index) => {
+            return (
+              <p
+                onClick={() =>
+                  speciality === item.specialization
+                    ? navigate("/doctors/")
+                    : navigate(`/doctors/${item.specialization}`)
+                }
+                className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}
+                key={index}
+              >
+                {item.specialization}
+              </p>
+            );
+          }
+          )}
         </div>
         <div className="w-full grid grid-cols-auto gap-4 gap-y-6">
           {filterDoc.map((item, index) => {

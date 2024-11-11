@@ -9,7 +9,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const {user, setUser} = useContext(AppContext);
   const [token, setToken] = useState(true)
-  console.log( JSON.stringify(user) === '{}');
   
   useEffect(() => {
     if (user) {
@@ -17,7 +16,7 @@ const Navbar = () => {
       console.log(user);
       
     }
-  }, [user]);
+  }, [user, token]);
   const handleLogout = () => {
     setUser(null); // Xóa thông tin người dùng khỏi AppContext
     setToken(false); // Đặt token thành false
