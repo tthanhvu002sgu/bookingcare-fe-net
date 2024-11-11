@@ -3,6 +3,7 @@ import { assets } from "../../assets/assets";
 import { useContext } from "react";
 import { AdminContext } from "../../context/AdminContext";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 import axios from "axios";
 const AddDoctor = () => {
   const [docImg, setDocImg] = useState(false);
@@ -17,8 +18,12 @@ const AddDoctor = () => {
   const [degree, setDegree] = useState("");
   const [error, setError] = useState("");
   const [data, setData] = useState({});
-  const { backendUrl, aToken } = useContext(AdminContext);
+  const { getAllSpecializations, specializations } = useContext(AdminContext);
+  
 
+  useEffect(() => {
+    getAllSpecializations();
+  })
   const checkDoctorEmail = (email) => {
     setEmail(email);
     // Kiểm tra email phải kết thúc bằng @doctor.hospital.com
@@ -49,11 +54,13 @@ const AddDoctor = () => {
       const doctorData = {
         specializationName: speciality,
         doctorName: name,
+        doctorImg: URL.createObjectURL(docImg),
         email,
         degree,
         experience: parseFloat(experience),
         bookingFee: parseFloat(fees),
         doctorAbout: about,
+        isAvailable: true,
       };
       const requestData = {
         model: userData,
@@ -185,12 +192,10 @@ const AddDoctor = () => {
                 name=""
                 id=""
               >
-                <option value="General physician">General physician</option>
-                <option value="Gynecologist">Gynecologist</option>
-                <option value="Dermatologist">Dermatologist</option>
-                <option value="Pediatricians">Pediatricians</option>
-                <option value="Neurologist">Neurologist</option>
-                <option value="Gastroenterologist">Gastroenterologist</option>
+              {specializations.map((specialization) => (
+                <option value={specialization.specialization}>{specialization.specialization}</option>
+              ))}
+               
               </select>
             </div>
             <div className="flex-1 flex flex-col gap-1">
