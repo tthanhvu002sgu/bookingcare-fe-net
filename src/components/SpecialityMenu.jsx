@@ -1,9 +1,11 @@
 import { specialityData } from "../assets/assets";
 import { Link } from "react-router-dom";
 import { useContext, useEffect } from "react";
+import axios from "axios";
 import { AppContext } from "../context/AppContext";
 const SpecialityMenu = () => {
-  const { specializations, getAllSpecializations } = useContext(AppContext);
+  const { specializations, getAllSpecializations, getDoctorsBySpecialization, setSelectedSpecialization } = useContext(AppContext);
+  
   useEffect(() => {
     getAllSpecializations();
   });
@@ -21,7 +23,7 @@ const SpecialityMenu = () => {
         {specializations.map((item, index) => {
           return (
             <Link
-              onClick={() => scrollTo(0, 0)}
+              onClick={() => getDoctorsBySpecialization(item.specialization)}
               className="flex flex-col items-center text-sm font-semibold text-gray-800 cursor-pointer flex-shrink-0 p-4 rounded-lg shadow-lg hover:shadow-2xl hover:translate-y-[-10px] hover:bg-gradient-to-r hover:from-indigo-500 hover:to-purple-600 transition-all duration-300 ease-in-out"
               to={`/doctors/${item.specialization}`}
               key={index}
