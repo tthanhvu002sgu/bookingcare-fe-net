@@ -25,7 +25,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />}></Route>
           <Route path="/my-profile" element={<MyProfile />}></Route>
           <Route path="/my-appointment" element={<MyAppointment />}></Route>
-          <Route path="/appointment/:docId" element={<Appointment />}></Route>
+          <Route path="/appointment/:doctorEmail" element={<Appointment />}></Route>
         </Routes>
         <Footer />
     </div>

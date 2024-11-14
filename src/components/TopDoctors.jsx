@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 const TopDoctors = () => {
   const navigate = useNavigate();
-  const {doctors, getAllDoctors} = useContext(AppContext)
+  const {doctors, getAllDoctors, getDoctorByEmail} = useContext(AppContext)
+  const handleSelectedDoctor = (email) => {
+    getDoctorByEmail(email)
+    navigate(`/appointment/${email}`);
+  }
   useEffect(() => {
     // Fetch lần đầu
     getAllDoctors();
@@ -24,7 +28,7 @@ const TopDoctors = () => {
         {doctors.slice(0, 10).map((item, index) => {
           return (
             <div
-              onClick={() => navigate(`/appointment/${item._id}`)}
+              onClick={() => handleSelectedDoctor(item.email)}
               className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
               key={index}
             >

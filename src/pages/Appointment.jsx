@@ -3,22 +3,72 @@ import { useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import RalatedDoctors from "../components/RalatedDoctors";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Appointment = () => {
-  const { docId } = useParams();
-  const { doctors } = useContext(AppContext);
+  const { selectedDoctor, getDoctorByEmail, user } = useContext(AppContext);
+  const email = useParams();
+
+  useEffect(() => {
+    getDoctorByEmail(email.doctorEmail);
+  }, []);
+  console.log(selectedDoctor);
+
   const daysOfWeek = ["SUN", "MON", "THU", "WED", "THU", "FRI", "SAT"];
 
-  const [docInfo, setDocInfo] = useState(null);
+  const [docInfo, setDocInfo] = useState(selectedDoctor);
 
   const [docSlots, setDocSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
   const [slotTime, setSlotTime] = useState("");
 
-  const fetchDocInfo = async () => {
-    const docInfoFind = doctors.find((doc) => doc._id == docId);
+  const bookAppointment = async () => {
+    try {
+      if (user && Object.keys(user).length != 0) {
+        const selectedSlot = docSlots[slotIndex];
+        console.log(selectedSlot);
 
-    setDocInfo(docInfoFind);
+        const appointmentDate = selectedSlot[0].datetime.toDateString();
+        const appointmentTime = slotTime;
+
+        const dateObject = new Date(appointmentDate);
+        const formattedDate = dateObject.toISOString().split("T")[0];
+
+        const data = {
+          patientEmail: user,
+          doctorEmail: selectedDoctor.email,
+          specialization: selectedDoctor.specializationName,
+          address: '',
+          doctorName: selectedDoctor.doctorName,
+          paymentId: 1,
+          date: formattedDate,
+          time: appointmentTime,
+          appointmentStatus: 0, // Assuming matching enum
+        };
+
+        
+
+        const response = await axios.post(
+          "https://localhost:7235/api/Appointment/add",
+          data,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if(response.status == 200){
+          toast.dark(
+            `Booking appointment for ${data.patientEmail} with ${data.doctorName} on ${data.date} at ${data.time}`
+          );
+        }
+      } else {
+        toast.error("Please login to book an appointment");
+      }
+    } catch (error) {
+      console.error("Error booking appointment:", error);
+    }
   };
 
   const getAvailableSlots = async () => {
@@ -71,10 +121,6 @@ const Appointment = () => {
   };
 
   useEffect(() => {
-    fetchDocInfo();
-  }, [doctors, docId]);
-
-  useEffect(() => {
     getAvailableSlots();
   }, [docInfo]);
 
@@ -101,7 +147,7 @@ const Appointment = () => {
             </p>
             <div className="flex items-center gap-3 text-sm mt-1 text-gray-600">
               <p>
-                {docInfo.degree} - {docInfo.speciality}
+                {docInfo.degree} - {docInfo.specializationName}
               </p>
               <button className="py-0.5 px-2 border text-xs rounded-full">
                 {docInfo.experience}
@@ -114,7 +160,7 @@ const Appointment = () => {
                 About <img src={assets.info_icon} alt="" />
               </p>
               <p className="text-sm text-gray-500 max-w-[700px] mt-3">
-                {docInfo.about}
+                {docInfo.doctorAbout}
               </p>
             </div>
             {/* <p>Appointment Fee: {docInfo.fee}</p> */}
@@ -157,13 +203,13 @@ const Appointment = () => {
                 </p>
               ))}
           </div>
-          <button className="bg-primary text-white font-light px-14 py-3 text-sm rounded-full my-6">
+          <button
+            onClick={() => bookAppointment(user, selectedDoctor)}
+            className="bg-primary text-white font-light px-14 py-3 text-sm rounded-full my-6"
+          >
             Book an appointment
           </button>
         </div>
-
-        {/* listing related doctors */}
-        <RalatedDoctors docId={docId} speciality={docInfo.speciality} />
       </div>
     )
   );

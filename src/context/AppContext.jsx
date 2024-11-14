@@ -11,6 +11,20 @@ const AppContextProvider = (props) => {
   const [specializations, setSpecializations] = useState([]);
   const [doctorsBySpecialization, setDoctorsBySpecialization] = useState([]);
   const [selectedSpecialization, setSelectedSpecialization] = useState(null);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [appointments, setAppointments] = useState([]);
+  const getAppointmentsByPatientEmail = useCallback( async (email) => {
+    const response = await axios.get(
+      `https://localhost:7235/api/Appointment/get-by-patient-email/${email}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    setAppointments(response.data);
+  }, []);
+
   const getAllSpecializations = useCallback(async () => {
     const data = await axios.get("https://localhost:7235/api/Specialization");
     if (data.data.length > 0) {
@@ -55,6 +69,20 @@ const AppContextProvider = (props) => {
       console.error("Error fetching doctors by specialization:", error);
     }
   }, []);
+  const getDoctorByEmail = useCallback(async (email) => {
+    try {
+      const response = await axios.get(`https://localhost:7235/api/Doctor/${email}`);
+      
+      setSelectedDoctor(response.data);
+      
+    } catch (error) {
+      setDoctorsBySpecialization([]);
+
+      console.error("Error fetching doctors by email:", error);
+    }
+  }, []);
+
+  
 
   const value = {
     doctors,
@@ -68,7 +96,11 @@ const AppContextProvider = (props) => {
     specializations,
     getDoctorsBySpecialization,
     doctorsBySpecialization,
-    selectedSpecialization
+    selectedSpecialization,
+    getDoctorByEmail,
+    selectedDoctor,
+    appointments,
+    getAppointmentsByPatientEmail
   };
 
   return (
