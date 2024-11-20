@@ -4,15 +4,15 @@ import { AppContext } from "../context/AppContext";
 const TopDoctors = () => {
   const navigate = useNavigate();
   const {doctors, getAllDoctors, getDoctorByEmail} = useContext(AppContext)
-  const handleSelectedDoctor = (email) => {
-    getDoctorByEmail(email)
+  const handleSelectedDoctor = async (email) => {
+    await getDoctorByEmail(email); // Đảm bảo hoàn tất trước
     navigate(`/appointment/${email}`);
-  }
+  };
   useEffect(() => {
     // Fetch lần đầu
     getAllDoctors();
 
-    // Tạo interval để fetch định kỳ (ví dụ: mỗi 10 giây)
+    // Tạo interval để fetch định kỳ 
     const interval = setInterval(() => {
       getAllDoctors();
     }, 10000);
