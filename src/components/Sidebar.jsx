@@ -7,8 +7,7 @@ import { AuthContext } from "../context/AuthContext";
 import { useEffect } from "react";
 const Sidebar = () => {
   const { aToken } = useContext(AdminContext);
-  const { userRole } = useContext(AuthContext);
-
+  const {userRole} = useContext(AuthContext)
   
   
   return (

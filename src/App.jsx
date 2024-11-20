@@ -11,30 +11,57 @@ import AllAppointments from "./pages/Admin/AllAppointments";
 import DoctorList from "./pages/Admin/DoctorList";
 import { AdminContext } from "./context/AdminContext";
 import AddSpecialization from "./pages/Admin/AddSpecialization";
+import { jwtDecode } from "jwt-decode";
+import { AuthContext } from "./context/AuthContext";
+import DoctorAppointment from "./pages/Doctor/DoctorAppointment";
+import DoctorInfo from "./pages/Doctor/DoctorInfo";
+
 const App = () => {
   const { aToken } = useContext(AdminContext);
-  return aToken ? (
-    <div className="bg-[#f8f9fd]">
-      <ToastContainer />
-      <Navbar />
-      <div className="flex items-start">
-        <Sidebar />
-        <Routes>
-          <Route path="/" element={<> </>} />
-          <Route path="/admin-dashboard" element={<Dashboard />} />
-          <Route path="/all-appointments" element={<AllAppointments />} />
-          <Route path="/add-doctor" element={<AddDoctor />} />
-          <Route path="/doctor-list" element={<DoctorList />} />
-          <Route path="/add-specialization" element={<AddSpecialization />} />
-        </Routes>
+  const {userRole} = useContext(AuthContext)
+  console.log(userRole);
+  let content;
+  if (userRole == "admin" && aToken) {
+    content = (
+      <div className="bg-[#f8f9fd]">
+        <ToastContainer />
+        <Navbar />
+        <div className="flex items-start">
+          <Sidebar />
+          <Routes>
+            <Route path="/" element={<> </>} />
+            <Route path="/admin-dashboard" element={<Dashboard />} />
+            <Route path="/all-appointments" element={<AllAppointments />} />
+            <Route path="/add-doctor" element={<AddDoctor />} />
+            <Route path="/doctor-list" element={<DoctorList />} />
+            <Route path="/add-specialization" element={<AddSpecialization />} />
+          </Routes>
+        </div>
       </div>
-    </div>
-  ) : (
-    <>
-      <Login />
-      <ToastContainer />
-    </>
-  );
+    );
+  } else if (userRole == "doctor" && aToken)   {
+    content = (
+      <div className="bg-[#f8f9fd]">
+        <ToastContainer />
+        <Navbar />
+        <div className="flex items-start">
+          <Sidebar />
+          <Routes>
+            <Route path="doctor-appointments" element={<DoctorAppointment />} />
+            <Route path="doctor-info" element={<DoctorInfo />} />
+          </Routes>
+        </div>
+      </div>
+    );
+  } else {
+    content = (
+      <>
+        <Login />
+        <ToastContainer />
+      </>
+    );
+  }
+  return content
 };
 
 export default App;

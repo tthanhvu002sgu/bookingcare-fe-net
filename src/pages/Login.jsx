@@ -5,11 +5,14 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AdminContext } from "../context/AdminContext";
+import { AuthContext } from "../context/AuthContext";
 const Login = () => {
   const [state, setState] = useState("Admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { aToken, setAToken } = useContext(AdminContext);
+  const { aToken, setAToken,  } = useContext(AdminContext);
+  
+  const {login,logout} = useContext(AuthContext)
 const navigate = useNavigate();
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -33,6 +36,7 @@ const navigate = useNavigate();
         toast.success("Sign in successfully");
         navigate("/admin-dashboard");
         setAToken(response.data);
+        login(response.data)
       } else {
         toast.error("Fail to sign in");
       }
