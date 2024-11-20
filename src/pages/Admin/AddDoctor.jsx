@@ -22,8 +22,9 @@ const AddDoctor = () => {
   
 
   useEffect(() => {
+    // Call once when component mounts
     getAllSpecializations();
-  })
+  }, [getAllSpecializations]); // Empty dependency array
   const checkDoctorEmail = (email) => {
     setEmail(email);
     // Kiểm tra email phải kết thúc bằng @doctor.hospital.com
