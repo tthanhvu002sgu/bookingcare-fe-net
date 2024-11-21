@@ -20,10 +20,10 @@ const Sidebar = () => {
                 isActive ? "bg-[#f2f3ff] border-r-4 border-primary" : ""
               }`
             }
-            to={"/admin-dashboard"}
+            to={"/patients"}
           >
             <img src={assets.home_icon} alt="" />
-            <p>Dashboard</p>
+            <p>Patient List</p>
           </NavLink>
           <NavLink
             className={({ isActive }) =>

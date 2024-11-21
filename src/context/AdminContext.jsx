@@ -11,12 +11,25 @@ const AdminContextProvider = (props) => {
   const [appointments, setAppointments] = useState([]);
   const [dashData, setDashData] = useState(false);
   const [specializations, setSpecializations] = useState([]);
+  const [patients, setPatients] = useState([])
     // Trạng thái phân trang
     const [page, setPage] = useState(1); // Trang hiện tại
     const [pageSize] = useState(5); // Số bản ghi mỗi trang
     const [totalPages, setTotalPages] = useState(0); // Tổng số trang
 
-  const getAllDoctors = async () => {
+    const getAllPatients = useCallback(async () => {
+      const response = await axios.get(
+        `https://localhost:7235/api/Patients/Get-all`
+      );
+      
+      const data = await response.data;
+      if (response.status === 200) {
+        setPatients(data);
+      } else {
+        toast.error(data.message);
+      }
+    }, []);
+  const getAllDoctors = useCallback(async () => {
     try {
       const data = await axios.get("https://localhost:7235/api/Doctor");
 
@@ -26,7 +39,7 @@ const AdminContextProvider = (props) => {
     } catch (err) {
       console.log(err);
     }
-  };
+  },[]);
   const getAllSpecializations = useCallback(async () => {
     const data = await axios.get("https://localhost:7235/api/Specialization");
     if (data.data.length > 0) {
@@ -135,7 +148,9 @@ const AdminContextProvider = (props) => {
     addSpecialization,
     deleteSpecialization,
     getDoctorAppointments,
-    page,setPage, totalPages
+    page,setPage, totalPages,
+    getAllPatients,
+    patients
   };
   return (
     <AdminContext.Provider value={value}>

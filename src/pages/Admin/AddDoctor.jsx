@@ -19,7 +19,8 @@ const AddDoctor = () => {
   const [error, setError] = useState("");
   const [data, setData] = useState({});
   const { getAllSpecializations, specializations } = useContext(AdminContext);
-  
+  // Tạo đối tượng FormData
+  // Tên "file" phải trùng với tham số IFormFile ở backend
 
   useEffect(() => {
     // Call once when component mounts
@@ -37,10 +38,27 @@ const AddDoctor = () => {
   };
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    
+
     try {
       if (!docImg) {
         return toast.error("Please upload doctor image");
+      }
+      const formData = new FormData();
+      formData.append("file", docImg);
+      const uploadResponse = await axios.post(
+        "https://localhost:7235/api/Doctor/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(uploadResponse.data.url);
+      const imageUrl = uploadResponse.data.url
+
+      if (!imageUrl) {
+        return toast.error("Failed to upload doctor image");
       }
       const userData = {
         fullName: name,
@@ -48,14 +66,14 @@ const AddDoctor = () => {
         password,
         confirmPassword: password,
         image: "",
-        dob: new Date('1988-10-10').toISOString(),
-        gender: 'male',
+        dob: new Date("1988-10-10").toISOString(),
+        gender: "male",
         address: address,
       };
       const doctorData = {
         specializationName: speciality,
         doctorName: name,
-        doctorImg: URL.createObjectURL(docImg),
+        doctorImg: imageUrl,
         email,
         degree,
         experience: parseFloat(experience),
@@ -78,9 +96,8 @@ const AddDoctor = () => {
             "Content-Type": "application/json",
           },
         }
-      )
-      
-      
+      );
+
       if (response.data.succeeded) {
         toast.success("Doctor added successfully");
         setName("");
@@ -92,12 +109,11 @@ const AddDoctor = () => {
         setAbout("");
         setSpeciality("General physician");
         setDegree("");
-        setDocImg('');
+        setDocImg("");
       } else {
         toast.error("Failed to add doctor");
       }
     } catch (e) {
-      
       console.log(e);
 
       toast.error(`${"Failed to add doctor"}`);
@@ -110,7 +126,7 @@ const AddDoctor = () => {
         <div className="flex items-center gap-4 mb-8 text-gray-500">
           <label htmlFor="doc-img">
             <img
-              src={docImg ? URL.createObjectURL(docImg) : assets.upload_area}
+              src={docImg ? docImg : assets.upload_area}
               alt=""
               className="w-16 bg-gray-100 rounded-full cursor-pointer"
             />
@@ -193,10 +209,11 @@ const AddDoctor = () => {
                 name=""
                 id=""
               >
-              {specializations.map((specialization) => (
-                <option value={specialization.specialization}>{specialization.specialization}</option>
-              ))}
-               
+                {specializations.map((specialization) => (
+                  <option value={specialization.specialization}>
+                    {specialization.specialization}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="flex-1 flex flex-col gap-1">
