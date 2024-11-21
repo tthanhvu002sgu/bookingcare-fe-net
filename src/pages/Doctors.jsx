@@ -8,15 +8,28 @@ const Doctors = () => {
     doctorsBySpecialization,
     getAllSpecializations,
     getDoctorsBySpecialization,
-    selectedSpecialization
+    selectedSpecialization,
+    getDoctorByEmail
   } = useContext(AppContext);
-  const navigate = useNavigate();
-  console.log(selectedSpecialization);
   
+  const handleSelectedDoctor = async (email) => {
+    await getDoctorByEmail(email); // Đảm bảo hoàn tất trước
+    navigate(`/appointment/${email}`);
+  };
+  const navigate = useNavigate();
   useEffect(() => {
-    
+    // Fetch lần đầu
     getAllSpecializations();
-  }, [getAllSpecializations]);
+
+    // Tạo interval để fetch định kỳ 
+    const interval = setInterval(() => {
+      getAllSpecializations();
+    }, 10000);
+    
+    // Cleanup khi component unmount
+    return () => clearInterval(interval);
+  }, []); // Empty dependency array
+  
 
   return (
     <div>
@@ -26,9 +39,7 @@ const Doctors = () => {
           {specializations.map((item, index) => {
             return (
               <p
-                onClick={() => {
-                  getDoctorsBySpecialization(item.specialization);
-                }}
+                onClick={() => getDoctorsBySpecialization(item.specialization)}
                 className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${item.specialization == selectedSpecialization ? "bg-blue-200" : ""}`}
                 key={index}
               >
@@ -41,7 +52,7 @@ const Doctors = () => {
           {doctorsBySpecialization.map((item, index) => {
             return (
               <div
-                onClick={() => navigate(`/appointment/${item._id}`)}
+                onClick={() => handleSelectedDoctor(item.email)}
                 className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500"
                 key={index}
               >

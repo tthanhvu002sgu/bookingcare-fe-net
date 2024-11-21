@@ -123,9 +123,7 @@ const Appointment = () => {
           } else {
             toast.error(response.data.message);
           }
-        } else {
-          toast.error("Please login to book an appointment");
-        }
+        } 
       }
     } catch (error) {
       toast.error(
@@ -224,7 +222,7 @@ const Appointment = () => {
           <div>
             <img
               className="bg-primary w-full sm:max-w-72 rounded-lg"
-              src={docInfo.image}
+              src={docInfo.doctorImg}
               alt=""
             />
           </div>
