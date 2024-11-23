@@ -70,7 +70,7 @@ const AllAppointments = () => {
           <p>Date & Time</p>
           <p>Doctor</p>
           <p>Fees</p>
-          <p>Action</p>
+          <p>Status</p>
         </div>
         {filteredAppointments.map((item, index) => {
           return (
@@ -89,16 +89,13 @@ const AllAppointments = () => {
                 <p>{item.doctorName}</p>
               </div>
               <p>{item.appointmentFee}</p>
-              {item.canceled ? (
-                <p className="text-red-400 text-xs font-medium">Canceled</p>
-              ) : (
-                <img
-                  onClick={() => cancelAppointment()}
-                  className="w-10 cursor-pointer"
-                  src={assets.cancel_icon}
-                  alt=""
-                />
-              )}
+              <p
+                className={`${
+                  item.appointmentStatus == 0 ? "text-red-500" : "text-green-500"
+                } hover:underline`}
+              >
+                {item.appointmentStatus == 0 ? "Canceled" : "Completed"}
+              </p>
             </div>
           );
         })}

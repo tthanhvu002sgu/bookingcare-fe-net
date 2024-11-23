@@ -67,7 +67,7 @@ const PatientList = () => {
                         className={`${appointment.appointmentStatus == 2 ? 'text-red-500' : "text-green-500"} hover:underline`}
                       
                       >
-                        {appointment.appointmentStatus == 2 ? "Rejected" : "Completed"}
+                        {appointment.appointmentStatus == 2 ? "Canceled" : "Completed"}
                       </p>
                     </div>
                   ))}
