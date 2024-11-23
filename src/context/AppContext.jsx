@@ -1,9 +1,9 @@
 import { createContext } from "react";
-import { doctors } from "../assets/assets";
 import { useState } from "react";
 export const AppContext = createContext();
 import { useCallback } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 const AppContextProvider = (props) => {
   const [user, setUser] = useState({});
   const [doctors, setDoctors] = useState([]);
@@ -13,6 +13,28 @@ const AppContextProvider = (props) => {
   const [selectedSpecialization, setSelectedSpecialization] = useState(null);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [appointments, setAppointments] = useState([]);
+  const cancelAppointment = useCallback(async ( patientEmail,date,time) => {
+   
+   
+    try {
+      const url = `https://localhost:7235/api/Appointment/cancel`;
+      const params = new URLSearchParams({
+        patientEmail,
+        date,
+        time,
+      });
+  
+      const response = await axios.post(`${url}?${params.toString()}`);
+      
+      if (response.status === 200) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message || "Failed to cancel appointment.");
+      }
+    } catch (error) {
+      console.error("Error canceling appointment:", error);
+    }
+}, []);
   const getAppointmentsByPatientEmail = useCallback( async (email) => {
     const response = await axios.get(
       `https://localhost:7235/api/Appointment/get-by-patient-email/${email}`,
@@ -100,7 +122,8 @@ const AppContextProvider = (props) => {
     getDoctorByEmail,
     selectedDoctor,
     appointments,
-    getAppointmentsByPatientEmail
+    getAppointmentsByPatientEmail,
+    cancelAppointment
   };
 
   return (
