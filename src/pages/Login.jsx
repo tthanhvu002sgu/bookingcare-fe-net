@@ -34,8 +34,9 @@ const navigate = useNavigate();
 
       if (response.status == 200) {
         toast.success("Sign in successfully");
-        navigate("/admin-dashboard");
+        navigate("/doctor-appointments");
         setAToken(response.data);
+        
         login(response.data)
       } else {
         toast.error("Fail to sign in");

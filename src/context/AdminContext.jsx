@@ -12,6 +12,7 @@ const AdminContextProvider = (props) => {
   const [dashData, setDashData] = useState(false);
   const [specializations, setSpecializations] = useState([]);
   const [patients, setPatients] = useState([])
+  const [patientAppointment, setPatientAppointment] = useState([])  
     // Trạng thái phân trang
     const [page, setPage] = useState(1); // Trang hiện tại
     const [pageSize] = useState(5); // Số bản ghi mỗi trang
@@ -23,6 +24,7 @@ const AdminContextProvider = (props) => {
       );
       
       const data = await response.data;
+      
       if (response.status === 200) {
         setPatients(data);
       } else {
@@ -99,6 +101,7 @@ const AdminContextProvider = (props) => {
       console.error("Error fetching doctor appointments:", error.message);
     }
   }, []);
+  
    // Hàm lấy danh sách lịch hẹn với phân trang
    const getAllAppointments = useCallback(async () => {
     const skip = (page - 1) * pageSize; // Tính số bản ghi cần bỏ qua
@@ -150,7 +153,10 @@ const AdminContextProvider = (props) => {
     getDoctorAppointments,
     page,setPage, totalPages,
     getAllPatients,
-    patients
+    patients,
+    setTotalPages,
+    pageSize,
+    patientAppointment, setPatientAppointment
   };
   return (
     <AdminContext.Provider value={value}>

@@ -3,19 +3,31 @@ import { AdminContext } from "../../context/AdminContext";
 import { assets } from "../../assets/assets";
 import axios from "axios";
 const PatientList = () => {
-  const { aToken, getAllPatients, dashData, cancelAppointment, patients } =
+  const { aToken, getAllPatients, cancelAppointment, patients,patientAppointment, setPatientAppointment } =
     useContext(AdminContext);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [appointments, setAppointments] = useState([]);
+ // const [appointments, setAppointments] = useState([]);
+ 
+  const getAppointmentsByPatientEmail = async (email) => {
+    const response = await axios.get(
+      `https://localhost:7235/api/Appointment/get-by-patient-email/${email}`
+    );
+    const data = await response.data.data;
+    return data;
+  };
   const handleSelectedPatient = async (patient) => {
+    
     setSelectedPatient(patient);
     const appointments = await getAppointmentsByPatientEmail(patient.email);
-    setAppointments(appointments);
+    console.log(appointments);
+    
+    setPatientAppointment(appointments);
   };
+
 
   useEffect(() => {
     getAllPatients();
-  }, [getAllPatients]);
+  }, []);
   return (
     <div className="m-5">
       <h1 className="text-xl font-bold mb-5">Patient List</h1>
@@ -39,7 +51,7 @@ const PatientList = () => {
               Appointments for {selectedPatient.fullName}
             </h2>
             <div className="bg-white rounded shadow p-4">
-              {appointments.length > 0 ? (
+              {patientAppointment.length > 0 ? (
                 <div className="overflow-x-auto">
                   {/* Header */}
                   <div className="grid grid-cols-6 gap-4 py-2 px-4 border-b font-semibold bg-gray-50">
@@ -51,7 +63,7 @@ const PatientList = () => {
                     <p>Status</p>
                   </div>
                   {/* Rows */}
-                  {appointments.map((appointment, index) => (
+                  {patientAppointment.map((appointment, index) => (
                     <div
                       key={index}
                       className="grid grid-cols-6 gap-4 py-2 px-4 border-b last:border-b-0 items-center"
@@ -65,7 +77,7 @@ const PatientList = () => {
                       <p>${appointment.appointmentFee}</p>
                       <p
                         className={`${appointment.appointmentStatus == 2 ? 'text-red-500' : "text-green-500"} hover:underline`}
-                      
+
                       >
                         {appointment.appointmentStatus == 2 ? "Canceled" : "Completed"}
                       </p>
@@ -87,10 +99,3 @@ const PatientList = () => {
 
 export default PatientList;
 
-const getAppointmentsByPatientEmail = async (email) => {
-  const response = await axios.get(
-    `https://localhost:7235/api/Appointment/get-by-patient-email/${email}`
-  );
-  const data = await response.data;
-  return data;
-};

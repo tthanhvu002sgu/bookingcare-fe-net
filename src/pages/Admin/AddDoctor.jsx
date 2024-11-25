@@ -38,6 +38,7 @@ const AddDoctor = () => {
   };
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    const loadingToast = toast.loading("Adding doctor...");
 
     try {
       if (!docImg) {
@@ -99,7 +100,6 @@ const AddDoctor = () => {
       );
 
       if (response.data.succeeded) {
-        toast.success("Doctor added successfully");
         setName("");
         setEmail("");
         setPassword("");
@@ -110,6 +110,12 @@ const AddDoctor = () => {
         setSpeciality("General physician");
         setDegree("");
         setDocImg("");
+        toast.update(loadingToast, {
+          render: "Doctor added successfully",
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+        });
       } else {
         toast.error("Failed to add doctor");
       }

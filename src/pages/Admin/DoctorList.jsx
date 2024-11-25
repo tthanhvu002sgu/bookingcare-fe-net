@@ -52,7 +52,11 @@ const DoctorList = () => {
           },
         }
       );
-      console.log(response);
+      if (response.status === 200) {
+        console.log(response.data);
+        await getAllDoctors()
+
+      }
     } catch (err) {
       console.error("Error updating doctor availability:", err);
     }
@@ -74,7 +78,7 @@ const DoctorList = () => {
               key={index}
             >
               <img
-                className="bg-indigo-50 group-hover:bg-primary transition-all duration-200"
+                className="bg-indigo-50 group-hover:bg-primary transition-all duration-200 max-h-[300px]"
                 src={doctor.doctorImg ? doctor.doctorImg : assets.doctor_avatar}
                 alt={doctor.doctorImg}
               />
@@ -86,98 +90,100 @@ const DoctorList = () => {
                   {doctor.specializationName}
                 </p>
               </div>
-              <div className="px-4 mt-2 flex items-center text-sm gap-1">
-                <input
-                  className="w-6 h-6"
-                  type="checkbox"
-                  onChange={(e) =>
-                    handleAvailabilityChange(doctor.email, e.target.checked)
-                  }
-                  checked={doctor.isAvailable}
-                />
-                <p>Available</p>
+              <div className="px-4 mt-2 mb-5 flex items-center text-sm gap-1">
+                
+                <div className="mt-2 w-full flex items-center justify-between text-sm gap-1">
+                  <button
+                    className={`px-3 py-1 rounded ${doctor.isAvailable ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700'
+                      }`}
+                    onClick={() => handleAvailabilityChange(doctor.email, !doctor.isAvailable)}
+                  >
+                    {doctor.isAvailable ? 'Available' : 'Unavailable'}
+                  </button>
+                  <button
+                    className="bg-green-500 text-white px-3 py-1 rounded"
+                    onClick={() => handleEditClick(doctor)}
+                  >
+                    Edit
+                  </button>
+                </div>
               </div>
-              <div className="px-4 mt-2">
-                <button
-                  className="bg-green-500 text-white px-3 py-1 rounded"
-                  onClick={() => handleEditClick(doctor)}
-                >
-                  Edit
-                </button>
-              </div>
+
             </div>
           );
         })}
       </div>
-      {editingDoctor && (
-        <>
-          {/* Overlay */}
-          <div className="fixed inset-0 bg-black bg-opacity-0 z-10 transition-opacity duration-500 ease-in-out opacity-100"></div>
-          {/* Form */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded shadow-lg z-20 w-[400px] transition-opacity duration-500 ease-in-out opacity-100">
-            <h2 className="text-lg font-medium mb-4">
-              Edit Doctor: {editingDoctor.doctorName}
-            </h2>
-            <form>
-              <label className="block mb-2">Name:</label>
-              <input
-                type="text"
-                name="doctorName"
-                value={formData.doctorName || ""}
-                onChange={handleInputChange}
-                className="block border p-2 rounded w-full mb-4"
-              />
-              <label className="block mb-2">Email:</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email || ""}
-                onChange={handleInputChange}
-                className="block border p-2 rounded w-full mb-4"
-                readOnly
-              />
-              <label className="block mb-2">Specialization:</label>
-              <select
-                name="specializationName"
-                value={formData.specializationName || ""}
-                onChange={handleInputChange}
-                className="block border p-2 rounded w-full mb-4"
-              >
-                {specializations.map((spec) => (
-                  <option key={spec.id} value={spec.name}>
-                    {spec.specialization}
-                  </option>
-                ))}
-              </select>
-              <label className="block mb-2">Booking Fee:</label>
-              <input
-                type="number"
-                name="bookingFee"
-                value={formData.bookingFee || ""}
-                onChange={handleInputChange}
-                className="block border p-2 rounded w-full mb-4"
-              />
-              <div className="flex justify-between">
-                <button
-                  type="button"
-                  onClick={handleUpdateDoctor}
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
+      {
+        editingDoctor && (
+          <>
+            {/* Overlay */}
+            <div className="fixed inset-0 bg-black bg-opacity-0 z-10 transition-opacity duration-500 ease-in-out opacity-100"></div>
+            {/* Form */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded shadow-lg z-20 w-[400px] transition-opacity duration-500 ease-in-out opacity-100">
+              <h2 className="text-lg font-medium mb-4">
+                Edit Doctor: {editingDoctor.doctorName}
+              </h2>
+              <form>
+                <label className="block mb-2">Name:</label>
+                <input
+                  type="text"
+                  name="doctorName"
+                  value={formData.doctorName || ""}
+                  onChange={handleInputChange}
+                  className="block border p-2 rounded w-full mb-4"
+                />
+                <label className="block mb-2">Email:</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email || ""}
+                  onChange={handleInputChange}
+                  className="block border p-2 rounded w-full mb-4"
+                  readOnly
+                />
+                <label className="block mb-2">Specialization:</label>
+                <select
+                  name="specializationName"
+                  value={formData.specializationName || ""}
+                  onChange={handleInputChange}
+                  className="block border p-2 rounded w-full mb-4"
                 >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setEditingDoctor(null)}
-                  className="bg-red-500 text-white px-4 py-2 rounded"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </>
-      )}
-    </div>
+                  {specializations.map((spec) => (
+                    <option key={spec.id} value={spec.name}>
+                      {spec.specialization}
+                    </option>
+                  ))}
+                </select>
+                <label className="block mb-2">Booking Fee:</label>
+                <input
+                  type="number"
+                  name="bookingFee"
+                  value={formData.bookingFee || ""}
+                  onChange={handleInputChange}
+                  className="block border p-2 rounded w-full mb-4"
+                />
+                <div className="flex justify-between">
+                  <button
+                    type="button"
+                    onClick={handleUpdateDoctor}
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingDoctor(null)}
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </>
+        )
+      }
+    </div >
   );
 };
 
