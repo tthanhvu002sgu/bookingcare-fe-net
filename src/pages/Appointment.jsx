@@ -85,7 +85,6 @@ const Appointment = () => {
             doctorName: selectedDoctor.doctorName,
             patientNamee: "",
             appointmentFee: selectedDoctor.bookingFee,
-            paymentId: 1,
             date: formattedDate,
             time: appointmentTime,
             appointmentStatus: 0, // Assuming matching enum
@@ -275,24 +274,7 @@ const Appointment = () => {
               ))}
           </div>
 
-          {/*  <div className="flex gap-3 items-center w-full overflow-x-scroll mt-4">
-            {docSlots.length &&
-              docSlots[slotIndex].map((item, index) => (
-                <p
-                  onClick={() => !item.booked && setSlotTime(item.time)}
-                  className={`text-sm font-light flex-shrink-0 px-5 py-2 rounded-full cursor-pointer ${
-                    item.booked
-                      ? "bg-gray-400 text-white cursor-not-allowed"
-                      : item.time === slotTime
-                      ? "bg-primary text-white"
-                      : "border border-gray-200 text-gray-400"
-                  }`}
-                  key={index}
-                >
-                  {item.booked ? "booked" : item.time.toLowerCase()}
-                </p>
-              ))}
-          </div> */}
+          
           <div className="flex gap-3 items-center w-full overflow-x-scroll mt-4">
             {docSlots.length &&
               docSlots[slotIndex].map((item, index) => (

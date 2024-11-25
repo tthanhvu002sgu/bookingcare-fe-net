@@ -15,11 +15,14 @@ const TopDoctors = () => {
     // Tạo interval để fetch định kỳ 
     const interval = setInterval(() => {
       getAllDoctors();
-    }, 10000);
+      console.log(doctors);
+      
+    }, 5000);
 
     // Cleanup khi component unmount
     return () => clearInterval(interval);
   }, []); // Empty dependency array
+  
   
   return (
     <div className="flex flex-col items-center gap-4 my-16 text-gray-900 md:mx-10">

@@ -17,20 +17,31 @@ const MyProfile = () => {
     getUserByEmail(user);
     setUserUpdateData(userData);
   }, [user, isEdit]);
+
   const handleSaveChange = async () => {
     setIsEdit(false);
+
+
+    console.log(userData);
     console.log(userUpdateData);
+
+
     try {
+
       const data = {
-        FullName: userUpdateData.name == '' ? userData.fullName : userUpdateData.name,
-        Image: "userUpdateData.image",
-        Dob: new Date(userUpdateData.dob).toISOString() == 'Invalid Date' ? userData.dob : new Date(userUpdateData.dob).toISOString(),
+        FullName: userUpdateData.name == '' ? userData.fullName : userUpdateData.fullName,
+        Image: "",
+        Dob: userUpdateData.dob === undefined || userUpdateData.dob === "" 
+        ? userData.dob.split("T")[0] 
+        : userUpdateData.dob,
         Gender: userUpdateData.gender == '' ? userData.gender : userUpdateData.gender,
         Address: userUpdateData.address == '' ? userData.address : userUpdateData.address,
-        PhoneNumber: userUpdateData.phone == '' ? userData.phoneNumber : userUpdateData.phone,
+        PhoneNumber: userUpdateData.phone === undefined || userUpdateData.phone === "" 
+        ? userData.phoneNumber 
+        : userUpdateData.phone,
       };
       const response = await axios.put(
-        `https://localhost:7235/api/Patients/update?email=${user}`, 
+        `https://localhost:7235/api/Patients/update?email=${user}`,
         data, // Truyền patient object trong body
         {
           headers: {
@@ -39,7 +50,6 @@ const MyProfile = () => {
         }
       );
       getUserByEmail(user)
-      console.log(response);
     } catch (err) {
       console.log(err);
     }
