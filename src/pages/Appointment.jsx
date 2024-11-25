@@ -74,7 +74,6 @@ const Appointment = () => {
           formattedDate,
           appointmentTime
         );
-        console.log(isAvailable);
         
         if (isAvailable) {
           const data = {
@@ -125,6 +124,7 @@ const Appointment = () => {
         } 
       }
     } catch (error) {
+      toast.error(error.response.data.message);
       toast.error(
         "The selected time slot is already booked. Please choose another time."
       );
@@ -135,7 +135,7 @@ const Appointment = () => {
 
   
   const getAvailableSlots = async () => {
-    setDocSlots([]);
+    //setDocSlots([]);
 
     try {
       // Gọi API lấy danh sách khung giờ đã đặt
@@ -197,7 +197,7 @@ const Appointment = () => {
         }
         console.log(docSlots);
 
-        setDocSlots((prev) => [...prev, timeSlots]);
+        await setDocSlots((prev) => [...prev, timeSlots]);
       }
     } catch (error) {
       console.error("Error fetching booked slots:", error);
@@ -211,6 +211,7 @@ const Appointment = () => {
     , 10000);
     return () => clearInterval(interval);
   }, [docInfo]);
+ 
 
   
   return (

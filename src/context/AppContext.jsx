@@ -19,8 +19,6 @@ const AppContextProvider = (props) => {
   const [pageSize] = useState(5); // Số bản ghi mỗi trang
   const [totalPages, setTotalPages] = useState(0); // Tổng số trang
   const cancelAppointment = useCallback(async (patientEmail, date, time) => {
-
-
     try {
       const url = `https://localhost:7235/api/Appointment/cancel`;
       const params = new URLSearchParams({
@@ -42,26 +40,28 @@ const AppContextProvider = (props) => {
   }, []);
   // Hàm lấy danh sách lịch hẹn với phân trang
 
-  const getAppointmentsByPatientEmail = useCallback(async (email) => {
-    const skip = (page - 1) * pageSize; // Tính số bản ghi cần bỏ qua
-    const response = await axios.get(
+  const getAppointmentsByPatientEmail = useCallback(
+    async (email) => {
+      const skip = (page - 1) * pageSize; // Tính số bản ghi cần bỏ qua
+      const response = await axios.get(
+        `https://localhost:7235/api/Appointment/get-by-patient-email/${email}?skip=${skip}&pageSize=${pageSize}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = response.data;
 
-      `https://localhost:7235/api/Appointment/get-by-patient-email/${email}?skip=${skip}&pageSize=${pageSize}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      if (response.status === 200) {
+        setAppointments(data.data);
+        setTotalPages(data.metadata.totalPages); // Cập nhật tổng số trang
+      } else {
+        toast.error(data.message);
       }
-    );
-    const data = response.data;
-    
-    if (response.status === 200) {
-      setAppointments(data.data);
-      setTotalPages(data.metadata.totalPages); // Cập nhật tổng số trang
-    } else {
-      toast.error(data.message);
-    }
-  }, [page, pageSize, setAppointments]);
+    },
+    [page, pageSize, setAppointments]
+  );
 
   const getAllSpecializations = useCallback(async () => {
     const data = await axios.get("https://localhost:7235/api/Specialization");
@@ -77,13 +77,11 @@ const AppContextProvider = (props) => {
           "Content-Type": "application/json",
         },
       }
-
     );
     if (response.status === 200) {
       setPatientId(response.data);
     } else {
       console.log("Failed to get patient id");
-
     }
   };
 
@@ -99,20 +97,20 @@ const AppContextProvider = (props) => {
     setUserData(response.data);
   };
   const getAllDoctors = async () => {
-    const data = await axios.get(
-      "https://localhost:7235/api/Doctor",
-
-    );
+    const data = await axios.get("https://localhost:7235/api/Doctor");
     if (data.data.length > 0) {
-      let doctorsFilter = JSON.parse(JSON.stringify(data.data, null, 2)).filter((doctor) => doctor.isAvailable == true);
+      let doctorsFilter = JSON.parse(JSON.stringify(data.data, null, 2)).filter(
+        (doctor) => doctor.isAvailable == true
+      );
       setDoctors(doctorsFilter);
     }
   };
   const getDoctorsBySpecialization = useCallback(async (specializationName) => {
     try {
-
-      setSelectedSpecialization(specializationName)
-      const response = await axios.get(`https://localhost:7235/api/Doctor/get-by-specialization?specializationName=${specializationName}`);
+      setSelectedSpecialization(specializationName);
+      const response = await axios.get(
+        `https://localhost:7235/api/Doctor/get-by-specialization?specializationName=${specializationName}`
+      );
       if (response.data.length > 0) {
         setDoctorsBySpecialization(response.data);
       } else {
@@ -126,19 +124,17 @@ const AppContextProvider = (props) => {
   }, []);
   const getDoctorByEmail = useCallback(async (email) => {
     try {
-      const response = await axios.get(`https://localhost:7235/api/Doctor/${email}`);
+      const response = await axios.get(
+        `https://localhost:7235/api/Doctor/${email}`
+      );
 
       setSelectedDoctor(response.data);
-
     } catch (error) {
       setDoctorsBySpecialization([]);
 
       console.error("Error fetching doctors by email:", error);
     }
   }, []);
-
-
-
 
   const value = {
     doctors,
@@ -160,7 +156,9 @@ const AppContextProvider = (props) => {
     cancelAppointment,
     getPatientIdByEmail,
     patientId,
-    page,setPage, totalPages
+    page,
+    setPage,
+    totalPages,
   };
 
   return (
