@@ -3,11 +3,11 @@ import { AdminContext } from "../../context/AdminContext";
 import { assets } from "../../assets/assets";
 import axios from "axios";
 const PatientList = () => {
-  const { aToken, getAllPatients, cancelAppointment, patients,patientAppointment, setPatientAppointment } =
+  const { aToken, getAllPatients, cancelAppointment, patients, patientAppointment, setPatientAppointment } =
     useContext(AdminContext);
   const [selectedPatient, setSelectedPatient] = useState(null);
- // const [appointments, setAppointments] = useState([]);
- 
+  // const [appointments, setAppointments] = useState([]);
+
   const getAppointmentsByPatientEmail = async (email) => {
     const response = await axios.get(
       `https://localhost:7235/api/Appointment/get-by-patient-email/${email}`
@@ -16,11 +16,11 @@ const PatientList = () => {
     return data;
   };
   const handleSelectedPatient = async (patient) => {
-    
+
     setSelectedPatient(patient);
     const appointments = await getAppointmentsByPatientEmail(patient.email);
     console.log(appointments);
-    
+
     setPatientAppointment(appointments);
   };
 
@@ -66,7 +66,7 @@ const PatientList = () => {
                   {patientAppointment.map((appointment, index) => (
                     <div
                       key={index}
-                      className="grid grid-cols-6 gap-4 py-2 px-4 border-b last:border-b-0 items-center"
+                      className="grid grid-cols-6 gap-4 py-2 px-4 border-b last:border-b-0 appointments-center"
                     >
                       <p>{index + 1}</p>
                       <p>{appointment.patientName}</p>
@@ -75,12 +75,19 @@ const PatientList = () => {
                       </p>
                       <p>{appointment.doctorName}</p>
                       <p>${appointment.appointmentFee}</p>
-                      <p
-                        className={`${appointment.appointmentStatus == 2 ? 'text-red-500' : "text-green-500"} hover:underline`}
-
-                      >
-                        {appointment.appointmentStatus == 2 ? "Canceled" : "Completed"}
-                      </p>
+                      {appointment.appointmentStatus == 1 ? <button className="text-sm text-green-500 text-left fold-bold">
+                        Confirmed
+                      </button> : appointment.appointmentStatus == 2 ? (
+                        <button className="text-sm text-red-500 text-left">
+                          Canceled
+                        </button>
+                      ) : new Date(`${appointment.date}T${appointment.time}`) > new Date() ? (
+                       <p>Pending</p>
+                      ) : (
+                        <button className="text-sm text-stone-500 text-left">
+                          Expired
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>

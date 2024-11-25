@@ -12,42 +12,44 @@ const AllAppointments = () => {
     setPage,
     totalPages,
     setTotalPages,
-    pageSize
+    pageSize,
   } = useContext(AdminContext);
   // Gọi API mỗi khi trang thay đổi
   //xử lý lọc lịch hẹn
-  const [sortOrder, setSortOrder] = useState("asc"); // asc or desc
   const [filterStatus, setFilterStatus] = useState(""); // 0, 1, 2 or ""
   const [filteredAppointments, setFilteredAppointments] = useState([]);
+
+  const [searchQuery, setSearchQuery] = useState(""); // Quản lý input tìm kiếm
 
   useEffect(() => {
     getAllAppointments();
   }, [getAllAppointments]);
   useEffect(() => {
-    let filtered = appointments;
+    let updatedAppointments = appointments;
 
+    // Lọc theo trạng thái
     if (filterStatus !== "") {
-      filtered = filtered.filter(appointment => appointment.status === parseInt(filterStatus));
+      updatedAppointments = updatedAppointments.filter(
+        (appointment) =>
+          appointment.appointmentStatus === parseInt(filterStatus)
+      );
     }
 
-    if (sortOrder === "asc") {
-      filtered = filtered.sort((a, b) => a.date.localeCompare(b.date));
-    } else {
-      filtered = filtered.sort((a, b) => b.date.localeCompare(a.date));
+    // Tìm kiếm theo tên bệnh nhân hoặc bác sĩ
+    if (searchQuery.trim() !== "") {
+      updatedAppointments = updatedAppointments.filter(
+        (item) =>
+          item.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.doctorName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
 
-    setFilteredAppointments(filtered);
-  }, [appointments, sortOrder, filterStatus]);
-
-  const handleSortChange = (e) => {
-    setSortOrder(e.target.value);
-  };
+    setFilteredAppointments(updatedAppointments);
+  }, [appointments, filterStatus, searchQuery]);
 
   const handleFilterChange = (e) => {
     setFilterStatus(e.target.value);
   };
-
-
 
   // Xử lý chuyển trang
   const handlePageChange = (newPage) => {
@@ -57,36 +59,27 @@ const AllAppointments = () => {
   };
   //xu ly tim kiem
 
-  const [searchQuery, setSearchQuery] = useState(""); // Quản lý input tìm kiếm
-  
   // Cập nhật filteredAppointments khi appointments thay đổi
   useEffect(() => {
     setFilteredAppointments(appointments);
   }, [appointments]);
   // Hàm xử lý tìm kiếm
-  const handleSearch = () => {
-    if (searchQuery.trim() === "") {
-      setFilteredAppointments(appointments); // Nếu input trống, hiển thị lại tất cả
-    } else {
-      const filtered = appointments.filter(
-        (item) =>
-          item.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.doctorName.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredAppointments(filtered);
-    }
-  };
+  /*  const handleSearch = () => {
+     if (searchQuery.trim() === "") {
+       setFilteredAppointments(appointments); // Nếu input trống, hiển thị lại tất cả
+     } else {
+       const filtered = appointments.filter(
+         (item) =>
+           item.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           item.doctorName.toLowerCase().includes(searchQuery.toLowerCase())
+       );
+       setFilteredAppointments(filtered);
+     }
+   }; */
   return (
     <div className="w-full max-w-6xl m-5">
       <p className="mb-3 text-lg font-medium">All Appointments</p>
       <div className="flex justify-between mb-3">
-        <div>
-          <label>Sort Order: </label>
-          <select value={sortOrder} onChange={handleSortChange}>
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
-        </div>
         <div>
           <label>Filter Status: </label>
           <select value={filterStatus} onChange={handleFilterChange}>
@@ -97,23 +90,23 @@ const AllAppointments = () => {
           </select>
         </div>
       </div>
-        {/* Thanh tìm kiếm */}
-        <div className="mb-4 flex gap-2">
-          <input
-            type="text"
-            placeholder="Search by patient or doctor name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border px-4 py-2 rounded w-full"
-          />
-          <button
+      {/* Thanh tìm kiếm */}
+      <div className="mb-4 flex gap-2">
+        <input
+          type="text"
+          placeholder="Search by patient or doctor name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border px-4 py-2 rounded w-full"
+        />
+
+        {/*   <button
             onClick={handleSearch}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Search
-          </button>
-        </div>
-
+          </button> */}
+      </div>
 
       <div className="bg-white border rounded text-sm max-h-[80vh] min-h-[60vh] overflow-y-scroll">
         <div className="hidden sm:grid grid-cols-[0.5fr_3fr_3fr_3fr_1fr_1fr] grid-flow-col py-3 px-6 border-b">
@@ -141,18 +134,18 @@ const AllAppointments = () => {
                 <p>{item.doctorName}</p>
               </div>
               <p>{item.appointmentFee}</p>
-              {item.appointmentStatus == 1 ? <button className="text-sm text-green-500 text-left fold-bold">
-                Confirmed
-              </button> : item.appointmentStatus == 2 ? (
+              {item.appointmentStatus == 1 ? (
+                <button className="text-sm text-green-500 text-left fold-bold">
+                  Confirmed
+                </button>
+              ) : item.appointmentStatus == 2 ? (
                 <button className="text-sm text-red-500 text-left">
                   Canceled
                 </button>
               ) : new Date(`${item.date}T${item.time}`) > new Date() ? (
-                <img
-                  className="w-10 cursor-pointer"
-                  src={assets.cancel_icon}
-                  alt=""
-                />
+                <button className="text-sm text-stone-500 text-left">
+                  Pending
+                </button>
               ) : (
                 <button className="text-sm text-stone-500 text-left">
                   Expired
