@@ -8,8 +8,15 @@ const MyAppointment = () => {
     setPage,
     totalPages } = useContext(AppContext);
   const handleCancelAppointment = async (email, date, time) => {
-    await cancelAppointment(email, date, time);
-    getAppointmentsByPatientEmail(user);
+    const confirm = window.confirm("Are you sure you want to cancel this appointment?");
+    if (confirm)
+    {
+
+      await cancelAppointment(email, date, time);
+
+      getAppointmentsByPatientEmail(user);
+      toast.success("Appointment canceled successfully.");
+    }
   }
   useEffect(() => {
     getAppointmentsByPatientEmail(user);

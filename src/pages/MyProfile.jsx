@@ -29,7 +29,7 @@ const MyProfile = () => {
     try {
 
       const data = {
-        FullName: userUpdateData.name == '' ? userData.fullName : userUpdateData.fullName,
+        FullName: userUpdateData.fullName == '' ? userData.fullName : userUpdateData.fullName,
         Image: "",
         Dob: userUpdateData.dob === undefined || userUpdateData.dob === "" 
         ? userData.dob.split("T")[0] 
@@ -40,6 +40,8 @@ const MyProfile = () => {
         ? userData.phoneNumber 
         : userUpdateData.phone,
       };
+      console.log(data);
+      
       const response = await axios.put(
         `https://localhost:7235/api/Patients/update?email=${user}`,
         data, // Truyền patient object trong body
@@ -60,9 +62,9 @@ const MyProfile = () => {
         <input
           className="bg-gray-50 text-3xl font-medium max-w-60 mt-4"
           type="text"
-          value={userUpdateData.name}
+          value={userUpdateData.fullName}
           onChange={(e) =>
-            setUserUpdateData((prev) => ({ ...prev, name: e.target.value }))
+            setUserUpdateData((prev) => ({ ...prev, fullName: e.target.value }))
           }
         />
       ) : (
