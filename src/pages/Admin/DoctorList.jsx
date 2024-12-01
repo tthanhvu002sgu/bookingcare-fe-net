@@ -78,7 +78,7 @@ const DoctorList = () => {
               key={index}
             >
               <img
-                className="bg-indigo-50 group-hover:bg-primary transition-all duration-200 max-h-[300px]"
+                className="bg-indigo-50 group-hover:bg-primary transition-all duration-200 h-[270px] w-[200px] object-contain"
                 src={doctor.doctorImg ? doctor.doctorImg : assets.doctor_avatar}
                 alt={doctor.doctorImg}
               />

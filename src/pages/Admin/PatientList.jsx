@@ -82,7 +82,7 @@ const PatientList = () => {
                           Canceled
                         </button>
                       ) : new Date(`${appointment.date}T${appointment.time}`) > new Date() ? (
-                       <p>Pending</p>
+                       <p>Unpaid</p>
                       ) : (
                         <button className="text-sm text-stone-500 text-left">
                           Expired

@@ -84,9 +84,11 @@ const AllAppointments = () => {
           <label>Filter Status: </label>
           <select value={filterStatus} onChange={handleFilterChange}>
             <option value="">All</option>
-            <option value="0">Pending</option>
-            <option value="1">Confirmed</option>
+            <option value="0">Unpaid</option>
+            <option value="1">Paid</option>
+
             <option value="2">Cancelled</option>
+            
           </select>
         </div>
       </div>
@@ -136,7 +138,7 @@ const AllAppointments = () => {
               <p>{item.appointmentFee}</p>
               {item.appointmentStatus == 1 ? (
                 <button className="text-sm text-green-500 text-left fold-bold">
-                  Confirmed
+                  Paid
                 </button>
               ) : item.appointmentStatus == 2 ? (
                 <button className="text-sm text-red-500 text-left">
@@ -144,7 +146,7 @@ const AllAppointments = () => {
                 </button>
               ) : new Date(`${item.date}T${item.time}`) > new Date() ? (
                 <button className="text-sm text-stone-500 text-left">
-                  Pending
+                  Unpaid
                 </button>
               ) : (
                 <button className="text-sm text-stone-500 text-left">
